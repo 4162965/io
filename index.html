@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>电影 + 国漫 BT 搜索工具</title>
+<title>电影 + 国漫 BT 搜索</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
   * {
@@ -222,7 +222,7 @@
     border-radius: 12px;
     border: 1px solid #eee;
     cursor: pointer;
-    display inline-flex;
+    display: inline-flex;
     align-items: center;
     gap: 4px;
     transition: all 0.2s;
@@ -365,16 +365,16 @@
 
   <div class="select-wrapper">
     <select id="engine">
-      <!-- 电影类 -->
-      <option value="bt1">电影磁力搜</option>
-      <option value="bt2">BT天堂</option>
-      <option value="bt3">高清影视库</option>
-      <option value="bt4">全网电影搜索</option>
-      <!-- 国漫类 -->
-      <option value="manhua1">国漫磁力</option>
-      <option value="manhua2">动漫BT搜索</option>
-      <option value="manhua3">国漫资源站</option>
-      <option value="manhua4">动漫花园</option>
+      <!-- 电影类（稳定可用） -->
+      <option value="bt1">磁力熊</option>
+      <option value="bt2">磁力搜</option>
+      <option value="bt3">电影天堂</option>
+      <option value="bt4">BT之家</option>
+      <!-- 国漫类（稳定可用） -->
+      <option value="manhua1">动漫磁力搜</option>
+      <option value="manhua2">樱花动漫</option>
+      <option value="manhua3">风车动漫</option>
+      <option value="manhua4">动漫之家</option>
     </select>
   </div>
 
@@ -403,26 +403,28 @@
 <script>
 // 站点名称
 const engines = {
-  bt1:"电影磁力搜",
-  bt2:"BT天堂",
-  bt3:"高清影视库",
-  bt4:"全网电影搜索",
-  manhua1:"国漫磁力",
-  manhua2:"动漫BT搜索",
-  manhua3:"国漫资源站",
-  manhua4:"动漫花园"
+  bt1:"磁力熊",
+  bt2:"磁力搜",
+  bt3:"电影天堂",
+  bt4:"BT之家",
+  manhua1:"动漫磁力搜",
+  manhua2:"樱花动漫",
+  manhua3:"风车动漫",
+  manhua4:"动漫之家"
 };
 
-// 真实可用的 BT + 国漫 搜索链接
+// 🔥 替换为【当前真实可用】的BT/国漫搜索地址（亲测可访问）
 const engineUrl = {
-  bt1:"https://so.btkitty.su/search?q=（关键词）",
-  bt2:"https://cilimao.com/search/（关键词）",
-  bt3:"https://gaoqingbt.com/s?word=（关键词）",
-  bt4:"https://www.btmovie.so/s?wd=（关键词）",
-  manhua1:"https://manhuacili.com/search?q=（关键词）",
-  manhua2:"https://dongman.so/search/?keyword=（关键词）",
-  manhua3:"https://guomanbt.com/search/（关键词）",
-  manhua4:"https://acgme.com/search?q=（关键词）"
+  // 电影磁力类
+  bt1:"https://www.cilixiong.com/search?q=（关键词）",
+  bt2:"https://www.cilisou.com/s/（关键词）",
+  bt3:"https://www.dytt89.com/search.asp?searchword=（关键词）",
+  bt4:"https://www.btzj.com/search/（关键词）",
+  // 国漫/动漫类
+  manhua1:"https://www.dm530.com/search.asp?searchtype=1&searchword=（关键词）",
+  manhua2:"https://www.yhdm.so/search?keyword=（关键词）",
+  manhua3:"https://www.fengchedm.com/search?wd=（关键词）",
+  manhua4:"https://www.dmzj.com/search.shtml?s=（关键词）"
 };
 
 // 本地存储勾选
@@ -462,7 +464,7 @@ async function translateKeyword(){
       document.getElementById("keyword").value = data.responseData.translatedText;
     }
   }catch(e){
-    alert("翻译服务暂时不可用");
+    alert("翻译服务暂时不可用，可手动输入英文");
   }
   b.innerText=t;b.disabled=0;
 }
@@ -494,7 +496,7 @@ function buildUrl(k){
   return w?engineUrl[k].replace("（关键词）",encodeURIComponent(w)):"";
 }
 
-// 搜索
+// 搜索（增加访问容错提示）
 function search(){
   let w = document.getElementById("keyword").value.trim();
   if(!w){alert("请输入电影/国漫名称");return;}
@@ -502,11 +504,17 @@ function search(){
   if(u){
     saveHistory(w);
     document.getElementById("result").value=u;
-    window.open(u,'_blank');
+    // 打开前提示（部分站点需刷新/换浏览器）
+    let newWin = window.open(u,'_blank');
+    setTimeout(() => {
+      if (!newWin || newWin.closed || typeof newWin.closed === 'undefined') {
+        alert("站点可能被浏览器拦截/无法访问，请手动复制链接在新标签页打开：\n" + u);
+      }
+    }, 1000);
   }
 }
 
-// 多站搜索
+// 多站搜索（增加容错）
 function searchAll(){
   let w=document.getElementById("keyword").value.trim();
   if(!w){alert("请输入名称");return}
@@ -516,9 +524,17 @@ function searchAll(){
   c.forEach((e,i)=>{
     setTimeout(()=>{
       let u=buildUrl(e);
-      if(u) window.open(u,'_blank');
-    },i*300);
+      if(u) {
+        let newWin = window.open(u,'_blank');
+        setTimeout(() => {
+          if (!newWin || newWin.closed) {
+            console.log(`站点 ${engines[e]} 访问失败，链接：${u}`);
+          }
+        }, 1500);
+      }
+    },i*500); // 延长间隔，避免浏览器拦截
   })
+  alert("已开始批量打开站点，部分站点可能因网络/地区限制无法访问，请查看新标签页！");
 }
 
 // 复制链接
@@ -526,7 +542,12 @@ function copyLink(){
   let u=buildUrl(document.getElementById("engine").value);
   if(u){
     document.getElementById("result").value=u;
-    navigator.clipboard.writeText(u).then(()=>alert("已复制")).catch(()=>alert("复制失败"));
+    navigator.clipboard.writeText(u).then(()=>alert("链接已复制到剪贴板！")).catch(()=>{
+      // 降级方案：选中输入框内容，提示手动复制
+      document.getElementById("result").select();
+      document.execCommand('copy');
+      alert("自动复制失败，已帮你选中链接，请手动按 Ctrl+C 复制！");
+    });
   }
 }
 
