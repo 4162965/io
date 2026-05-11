@@ -377,8 +377,8 @@
       <option value="so360">360图片</option>
       <option value="unsplash">Unsplash</option>
       <option value="pexels">Pexels</option>
-      <option value="xiaohongshu">小红书（免登录）</option>
-      <option value="xiaohongshu_img">小红书【纯图版】</option>
+      <option value="xiaohongshu">小红书(电脑免登录)</option>
+      <option value="xiaohongshu_img">小红书【电脑纯图版】</option>
       <option value="zhiwutuku">植物图库</option>
     </select>
   </div>
@@ -407,18 +407,20 @@
 
 <script>
 const engines = {
-  google:"Google图片",pinterest:"Pinterest",xiaohongshu:"小红书（免登录）",xiaohongshu_img:"小红书【纯图版】",bing:"必应",
+  google:"Google图片",pinterest:"Pinterest",xiaohongshu:"小红书(电脑免登录)",xiaohongshu_img:"小红书【电脑纯图版】",bing:"必应",
   baidu:"百度",sogou:"搜狗",huaban:"花瓣",quark:"夸克",zcool:"站酷",
   pixabay:"Pixabay",so360:"360图片",unsplash:"Unsplash",pexels:"Pexels",
   zhiwutuku:"植物图库"
 };
 
-// ✅ 双小红书搜索：普通免登录 + 纯图片免登录
+// ======================
+// ✅ 电脑端 小红书 免登录 + 纯图搜索
+// ======================
 const engineUrl = {
   google:"https://www.google.com/search?tbm=isch&q=（关键词）",
   pinterest:"https://www.pinterest.com/search/pins/?q=（关键词）",
-  xiaohongshu:"https://www.xiaohongshu.com/search/result?keyword=（关键词）",
-  xiaohongshu_img:"https://www.xiaohongshu.com/search/result?keyword=（关键词）&tab=album",
+  xiaohongshu:"https://www.xiaohongshu.com/search?keyword=（关键词）",
+  xiaohongshu_img:"https://www.xiaohongshu.com/search?keyword=（关键词）&type=image",
   bing:"https://www.bing.com/images/search?q=（关键词）",
   baidu:"https://image.baidu.com/search/index?tn=baiduimage&word=（关键词）",
   sogou:"https://pic.sogou.com/pics?query=（关键词）",
