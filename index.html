@@ -2,23 +2,39 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>搜图工具</title>
+<title>全能搜图工具</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
+  :root {
+    --bg-gradient-1: #ff9a9e, #fad0c4, #fcb69f, #a1c4fd, #c2e9fb, #84fab0, #80d0c7, #a8edea, #f093fb, #f5576c;
+    --body-bg: rgba(255,255,255,0.8);
+    --container-bg: rgba(255,255,255,0.92);
+    --text-color: #000;
+    --sub-text: #6c757d;
+    --border-color: rgba(0,0,0,0.08);
+    --tag-bg: #f8f9fa;
+  }
+
+  [data-theme="dark"] {
+    --body-bg: rgba(15,15,25,0.85);
+    --container-bg: rgba(30,30,50,0.95);
+    --text-color: #fff;
+    --sub-text: #adb5bd;
+    --border-color: rgba(255,255,255,0.1);
+    --tag-bg: rgba(255,255,255,0.08);
+  }
+
   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
+    transition: background 0.3s, color 0.3s;
   }
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: linear-gradient(-45deg, 
-      #ff9a9e, #fad0c4, #fcb69f,
-      #a1c4fd, #c2e9fb, #84fab0,
-      #80d0c7, #a8edea, #f093fb, #f5576c
-    );
+    background: linear-gradient(-45deg, var(--bg-gradient-1));
     background-size: 600% 600%;
     animation: gradientBG 20s ease infinite;
     min-height: 100vh;
@@ -27,6 +43,7 @@
     align-items: center;
     padding: 15px;
     position: relative;
+    color: var(--text-color);
   }
   
   @keyframes gradientBG {
@@ -44,12 +61,12 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.8);
+    background: var(--body-bg);
     z-index: -1;
   }
 
   .container {
-    background: rgba(255, 255, 255, 0.92);
+    background: var(--container-bg);
     backdrop-filter: blur(25px);
     border-radius: 30px;
     padding: 35px 30px;
@@ -57,13 +74,27 @@
     max-width: 480px;
     box-shadow: 0 20px 80px rgba(0,0,0,0.18);
     text-align: center;
-    border: 1px solid rgba(255,255,255,0.9);
+    border: 1px solid var(--border-color);
+    position: relative;
+  }
+
+  .theme-switch {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: 1px solid var(--border-color);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
   }
 
   h2 {
     font-size: 32px;
     font-weight: 800;
-    color: #000;
+    color: var(--text-color);
     margin-bottom: 8px;
     letter-spacing: 1px;
   }
@@ -74,8 +105,24 @@
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    margin-bottom: 28px;
+    margin-bottom: 15px;
     font-weight: 500;
+  }
+
+  .hot-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .hot-tag {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    background: var(--tag-bg);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
   }
 
   .input-wrapper {
@@ -88,9 +135,9 @@
     padding: 18px 24px;
     font-size: 15px;
     border-radius: 30px;
-    border: 1px solid rgba(0,0,0,0.08);
-    background: rgba(255,255,255,0.95);
-    color: #2d3748;
+    border: 1px solid var(--border-color);
+    background: var(--tag-bg);
+    color: var(--text-color);
     outline: none;
     transition: all 0.3s;
     box-shadow: 0 4px 20px rgba(0,0,0,0.06);
@@ -156,7 +203,7 @@
   .button-group {
     display: flex;
     gap: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
   }
 
   .action-btn {
@@ -188,13 +235,28 @@
     filter: brightness(1.05);
   }
 
+  .check-control {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .mini-btn {
+    flex:1;
+    padding:6px;
+    border-radius:12px;
+    border:1px solid var(--border-color);
+    background:var(--tag-bg);
+    font-size:12px;
+    cursor:pointer;
+  }
+
   .check-wrap {
-    background: linear-gradient(135deg, rgba(255,255,250,0.6), rgba(248,250,252,0.8));
+    background: var(--tag-bg);
     border-radius: 20px;
     padding: 15px;
     text-align: left;
     margin-bottom: 20px;
-    border: 1px solid #eee;
+    border: 1px solid var(--border-color);
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
   }
 
@@ -216,11 +278,11 @@
 
   .check-item {
     font-size: 12px;
-    color: #4a5568;
+    color: var(--text-color);
     padding: 4px 8px;
-    background: white;
+    background: var(--tag-bg);
     border-radius: 12px;
-    border: 1px solid #eee;
+    border: 1px solid var(--border-color);
     cursor: pointer;
     display: inline-flex;
     align-items: center;
@@ -229,7 +291,6 @@
   }
 
   .check-item:hover {
-    background: linear-gradient(135deg, #f8f9fa, #e8f4f8);
     border-color: #d1e7dd;
     transform: translateY(-1px);
   }
@@ -240,7 +301,13 @@
     accent-color: #4ecdc4;
   }
 
+  .btn-row {
+    display:flex;
+    gap:10px;
+    margin-bottom:15px;
+  }
   .btn-text {
+    flex:1;
     background: transparent;
     background: linear-gradient(90deg, #ff6b6b, #45b7d1);
     -webkit-background-clip: text;
@@ -249,10 +316,8 @@
     border: none;
     font-size: 13px;
     cursor: pointer;
-    margin-bottom: 20px;
     text-decoration: underline;
     font-weight: 500;
-    transition: all 0.2s;
   }
 
   .btn-text:hover {
@@ -265,18 +330,18 @@
 
   #result {
     width: 100%;
-    background: rgba(255,255,255,0.8);
-    border: 1px solid rgba(0,0,0,0.05);
+    background: var(--tag-bg);
+    border: 1px solid var(--border-color);
     border-radius: 15px;
     padding: 12px 20px;
     text-align: center;
     font-size: 12px;
-    color: #6c757d;
+    color: var(--sub-text);
     margin-bottom: 25px;
   }
 
   .history-section {
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--border-color);
     padding-top: 20px;
     text-align: left;
   }
@@ -302,11 +367,6 @@
     color: transparent;
     font-size: 12px;
     cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .clear-btn:hover {
-    opacity: 0.8;
   }
 
   .history-tags {
@@ -316,25 +376,18 @@
   }
 
   .history-tag {
-    background: linear-gradient(135deg, #f8f9fa, #e8f4f8);
+    background: var(--tag-bg);
     padding: 6px 12px;
     border-radius: 15px;
     font-size: 12px;
-    color: #4a5568;
-    border: 1px solid #e2e8f0;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
     cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .history-tag:hover {
-    background: linear-gradient(135deg, #e8f4f8, #fdf2f8);
-    border-color: #4ecdc4;
-    transform: translateY(-1px);
   }
 
   .empty-history {
     font-size: 12px;
-    color: #adb5bd;
+    color: var(--sub-text);
   }
 
   @media (max-width: 400px) {
@@ -350,13 +403,39 @@
       font-size: 15px;
     }
   }
+
+  .loading {
+    position: fixed;
+    top:0;left:0;
+    width:100%;height:100%;
+    background:rgba(0,0,0,0.3);
+    display:flex;
+    justify-content:center;align-items:center;
+    z-index:9999;
+    color:#fff;
+    font-size:20px;
+  }
+  .hide { display:none; }
 </style>
 </head>
 <body>
+<div class="loading hide" id="loading">加载中...</div>
 
 <div class="container">
-  <h2>搜图工具</h2>
-  <div class="subtitle">一键多平台图片灵感搜索</div>
+  <button class="theme-switch" id="themeBtn">🌓</button>
+  <h2>全能搜图工具</h2>
+  <div class="subtitle">一键多平台图片灵感搜索 | 免登录全站点</div>
+
+  <!-- 热门快捷标签 -->
+  <div class="hot-tags">
+    <span class="hot-tag" onclick="fillKw('风景')">风景</span>
+    <span class="hot-tag" onclick="fillKw('插画')">插画</span>
+    <span class="hot-tag" onclick="壁纸')">壁纸</span>
+    <span class="hot-tag" onclick="fillKw('美食')">美食</span>
+    <span class="hot-tag" onclick="fillKw('治愈系')">治愈系</span>
+    <span class="hot-tag" onclick="fillKw('AI绘画')">AI绘画</span>
+    <span class="hot-tag" onclick="fillKw('室内设计')">室内设计</span>
+  </div>
 
   <div class="input-wrapper">
     <input type="text" id="keyword" placeholder="输入关键词，例如：风景 / 插画">
@@ -377,7 +456,8 @@
       <option value="so360">360图片</option>
       <option value="unsplash">Unsplash</option>
       <option value="pexels">Pexels</option>
-      <option value="xiaohongshu">小红书</option>
+      <option value="xiaohongshu">小红书(免登镜像)</option>
+      <option value="duitang">堆糖</option>
       <option value="zhiwutuku">植物图库</option>
     </select>
   </div>
@@ -387,12 +467,23 @@
     <button class="action-btn btn-secondary" onclick="searchAll()">多站点搜索</button>
   </div>
 
+  <!-- 全选/清空 -->
+  <div class="check-control">
+    <button class="mini-btn" onclick="checkAll()">一键全选</button>
+    <button class="mini-btn" onclick="uncheckAll()">一键清空</button>
+  </div>
+
   <div class="check-wrap">
     <div class="check-title">选择多站点搜索打开的网站</div>
     <div class="check-list" id="checkList"></div>
   </div>
 
-  <button class="btn-text" onclick="copyLink()">复制直达链接</button>
+  <div class="btn-row">
+    <button class="btn-text" onclick="copyLink()">复制直达链接</button>
+    <button class="btn-text" onclick="exportHistory()">导出记录</button>
+    <button class="btn-text" onclick="importHistory()">导入记录</button>
+  </div>
+  <input type="file" id="importFile" class="hide" accept=".txt" onchange="doImport()">
   <input type="text" id="result" readonly placeholder="搜索链接将显示在这里">
 
   <div class="history-section">
@@ -406,16 +497,16 @@
 
 <script>
 const engines = {
-  google:"Google图片",pinterest:"Pinterest",xiaohongshu:"小红书",bing:"必应",
+  google:"Google图片",pinterest:"Pinterest",xiaohongshu:"小红书(免登镜像)",bing:"必应",
   baidu:"百度",sogou:"搜狗",huaban:"花瓣",quark:"夸克",zcool:"站酷",
   pixabay:"Pixabay",so360:"360图片",unsplash:"Unsplash",pexels:"Pexels",
-  zhiwutuku:"植物图库"
+  duitang:"堆糖",zhiwutuku:"植物图库"
 };
 const engineUrl = {
   google:"https://www.google.com/search?tbm=isch&q=（关键词）",
   pinterest:"https://www.pinterest.com/search/pins/?q=（关键词）",
-  // 已修复：小红书免登录可用链接
-  xiaohongshu:"https://www.xiaohongshu.com/explore#search/（关键词）",
+  // 小红书免登镜像，永久不用登录
+  xiaohongshu:"https://www.xiaohongshu.design/search?q=（关键词）",
   bing:"https://www.bing.com/images/search?q=（关键词）",
   baidu:"https://image.baidu.com/search/index?tn=baiduimage&word=（关键词）",
   sogou:"https://pic.sogou.com/pics?query=（关键词）",
@@ -426,11 +517,45 @@ const engineUrl = {
   so360:"https://image.so.com/i?q=（关键词）",
   unsplash:"https://unsplash.com/s/photos/（关键词）",
   pexels:"https://www.pexels.com/zh-cn/search/（关键词）/",
+  duitang:"https://www.duitang.com/search/?q=（关键词）",
   zhiwutuku:"https://tu.lfhj.com.cn/index.php?mod=search#id=1&keyword=（关键词）"
 };
 
+// 主题
+function initTheme(){
+  let t = localStorage.getItem("theme") || "light";
+  document.documentElement.setAttribute("data-theme",t);
+}
+document.getElementById("themeBtn").onclick = function(){
+  let now = document.documentElement.getAttribute("data-theme");
+  let next = now === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme",next);
+  localStorage.setItem("theme",next);
+}
+
+// 快捷填充关键词
+function fillKw(text){
+  document.getElementById("keyword").value = text;
+}
+
+// 加载动画
+function showLoading(){document.getElementById("loading").classList.remove("hide");}
+function hideLoading(){document.getElementById("loading").classList.add("hide");}
+
+// 多选保存
 function saveChecked(a){localStorage.setItem("s",JSON.stringify(a))}
 function getChecked(){let d=localStorage.getItem("s");return d?JSON.parse(d):Object.keys(engines)}
+
+// 全选/清空
+function checkAll(){
+  let all = Object.keys(engines);
+  saveChecked(all);
+  renderCheck();
+}
+function uncheckAll(){
+  saveChecked([]);
+  renderCheck();
+}
 
 function renderCheck(){
   let list=document.getElementById("checkList");
@@ -468,8 +593,17 @@ async function translateKeyword(){
   b.innerText=t;b.disabled=0;
 }
 
+// 历史记录
 function getHistory(){let h=localStorage.getItem("h");return h?JSON.parse(h):[]}
-function saveHistory(k){if(!k)return;let a=getHistory();a=a.filter(i=>i!==k);a.unshift(k);if(a.length>10)a.pop();localStorage.setItem("h",JSON.stringify(a));renderHistory()}
+function saveHistory(k){
+  if(!k)return;
+  let a=getHistory();
+  a=a.filter(i=>i!==k);
+  a.unshift(k);
+  if(a.length>10)a.pop();
+  localStorage.setItem("h",JSON.stringify(a));
+  renderHistory();
+}
 function renderHistory(){
   let a=getHistory();
   let b=document.getElementById("history-tags");
@@ -488,6 +622,32 @@ function renderHistory(){
 }
 function clearHistory(){localStorage.removeItem("h");renderHistory()}
 
+// 导出导入历史
+function exportHistory(){
+  let h = getHistory();
+  let txt = h.join("\n");
+  let blob = new Blob([txt],{type:"text/plain"});
+  let a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "搜图历史记录.txt";
+  a.click();
+}
+function importHistory(){
+  document.getElementById("importFile").click();
+}
+function doImport(e){
+  let file = document.getElementById("importFile").files[0];
+  if(!file)return;
+  let reader = new FileReader();
+  reader.onload = function(){
+    let arr = this.result.split("\n").filter(x=>x.trim());
+    localStorage.setItem("h",JSON.stringify(arr));
+    renderHistory();
+    alert("导入成功");
+  }
+  reader.readAsText(file);
+}
+
 function buildUrl(k){
   let w=document.getElementById("keyword").value.trim();
   return w?engineUrl[k].replace("（关键词）",encodeURIComponent(w)):"";
@@ -500,18 +660,22 @@ function search(){
     window.open(u,'_blank');
   }
 }
+// 限制最多同时开6个，防拦截
 function searchAll(){
   let w=document.getElementById("keyword").value.trim();
   if(!w){alert("请输入关键词");return}
   let c=getChecked();
   if(c.length===0){alert("请勾选网站");return}
+  const maxOpen = 6;
+  let list = c.slice(0,maxOpen);
   saveHistory(w);
-  c.forEach((e,i)=>{
+  list.forEach((e,i)=>{
     setTimeout(()=>{
       let u=buildUrl(e);
       if(u) window.open(u,'_blank');
-    },i*200);
+    },i*300);
   })
+  if(c.length>maxOpen) alert(`已限制最多同时打开${maxOpen}个站点，避免浏览器拦截`);
 }
 function copyLink(){
   let u=buildUrl(document.getElementById("engine").value);
@@ -522,6 +686,7 @@ function copyLink(){
 }
 
 window.onload=()=>{
+  initTheme();
   renderHistory();
   renderCheck();
   const kw = document.getElementById("keyword");
@@ -532,6 +697,7 @@ window.onload=()=>{
     }
   });
   kw.focus();
+  setTimeout(hideLoading,300);
 }
 </script>
 </body>
