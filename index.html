@@ -199,55 +199,50 @@
     filter: brightness(1.05);
   }
 
-  .check-wrap {
+  /* 超级整齐排版：三列网格 + 圆圈强制左对齐 */
+  .engine-group {
     background: var(--tag-bg);
     border-radius: 20px;
-    padding: 15px;
-    text-align: left;
-    margin-bottom: 20px;
+    padding: 18px 15px;
+    margin-bottom: 22px;
     border: 1px solid var(--border-color);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
   }
-
-  .check-title {
-    font-size: 12px;
-    background: linear-gradient(90deg, #6c5ce7, #74b9ff);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    margin-bottom: 10px;
-    font-weight: 600;
+  .engine-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
   }
-
-  .check-list {
+  .engine-item {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .check-item {
-    font-size: 12px;
-    color: var(--text-color);
-    padding: 4px 8px;
-    background: var(--tag-bg);
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-    cursor: pointer;
-    display: inline-flex;
     align-items: center;
-    gap: 4px;
+    justify-content: flex-start;
+    gap: 6px;
+    padding: 9px 10px;
+    border-radius: 12px;
+    background: var(--tag-bg);
+    border: 1px solid var(--border-color);
+    font-size: 12px;
+    cursor: pointer;
     transition: all 0.2s;
+    text-align: left;
+    white-space: nowrap;
   }
-
-  .check-item:hover {
-    border-color: #d1e7dd;
-    transform: translateY(-1px);
+  .engine-item:hover {
+    border-color: #a1c4fd;
+    background: rgba(161,196,253,0.1);
   }
-
-  .check-item input {
+  .engine-item input {
     width: 14px;
     height: 14px;
+    min-width: 14px;
     accent-color: #4ecdc4;
+    margin: 0;
+  }
+
+  /* 需要VPN的网站标红 */
+  .vpn-warning {
+    color: #ff4757 !important;
+    font-weight: 600;
   }
 
   .btn-row {
@@ -391,9 +386,9 @@
     <button class="btn-translate" onclick="translateKeyword()">中英互译</button>
   </div>
 
-  <div class="check-wrap">
-    <div class="check-title">选择搜索站点</div>
-    <div class="check-list" id="checkList"></div>
+  <!-- 整齐网站选项 -->
+  <div class="engine-group">
+    <div class="engine-list" id="engineList"></div>
   </div>
 
   <button class="action-btn" onclick="search()">搜索</button>
@@ -422,14 +417,12 @@ const engines = {
   huaban: "花瓣",
   so360: "360图片",
   quark: "夸克图片",
+  zcool: "站酷",
+  xiaohongshu: "小红书",
   google: "Google图片",
-  pinterest: "Pinterest",
-  pixabay: "Pixabay",
-  unsplash: "Unsplash",
-  pexels: "Pexels",
-  xiaohongshu: "小红书(免登镜像)"
+  pinterest: "Pinterest"
 };
-// 对应网址（夸克已修复为图片搜索）
+// 对应网址
 const engineUrl = {
   zhiwutuku: "https://tu.lfhj.com.cn/index.php?mod=search#id=1&keyword=（关键词）",
   bing: "https://www.bing.com/images/search?q=（关键词）",
@@ -437,13 +430,11 @@ const engineUrl = {
   sogou: "https://pic.sogou.com/pics?query=（关键词）",
   huaban: "https://huaban.com/search?q=（关键词）",
   so360: "https://image.so.com/i?q=（关键词）",
-  quark: "https://image.quark.cn/search?q=（关键词）", // 修复为夸克图片
+  quark: "https://m.quark.cn/vsearch/picture?qtab=picture&q=（关键词）",
+  zcool: "https://www.zcool.com.cn/search/content?word=（关键词）",
+  xiaohongshu: "https://www.xiaohongshu.com/search_result?keyword=（关键词）",
   google: "https://www.google.com/search?tbm=isch&q=（关键词）",
-  pinterest: "https://www.pinterest.com/search/pins/?q=（关键词）",
-  pixabay: "https://pixabay.com/zh/images/search/（关键词）/",
-  unsplash: "https://unsplash.com/s/photos/（关键词）",
-  pexels: "https://www.pexels.com/zh-cn/search/（关键词）/",
-  xiaohongshu: "https://www.xiaohongshu.design/search?q=（关键词）"
+  pinterest: "https://www.pinterest.com/search/pins/?q=（关键词）"
 };
 
 // 主题
@@ -467,29 +458,39 @@ function fillKw(text){
 function showLoading(){document.getElementById("loading").classList.remove("hide");}
 function hideLoading(){document.getElementById("loading").classList.add("hide");}
 
-// 多选保存
-function saveChecked(a){localStorage.setItem("s",JSON.stringify(a))}
-function getChecked(){let d=localStorage.getItem("s");return d?JSON.parse(d):Object.keys(engines)}
+// 单选保存
+function saveChecked(val) {
+  localStorage.setItem("s", val);
+}
+function getChecked() {
+  return localStorage.getItem("s") || Object.keys(engines)[0];
+}
 
-function renderCheck(){
-  let list=document.getElementById("checkList");
-  list.innerHTML="";
-  let c=getChecked();
-  Object.keys(engines).forEach(k=>{
-    let l=document.createElement("label");
-    l.className="check-item";
-    l.innerHTML=`<input type="checkbox" value="${k}"> ${engines[k]}`;
-    let i=l.querySelector("input");
-    i.checked=c.includes(k);
-    i.onchange=()=>{
-      let all=Array.from(document.querySelectorAll(".check-item input:checked")).map(e=>e.value);
-      saveChecked(all);
+// 渲染整齐的网站选项
+function renderEngines(){
+  let list = document.getElementById("engineList");
+  list.innerHTML = "";
+  let current = getChecked();
+  
+  Object.keys(engines).forEach(k => {
+    let label = document.createElement("label");
+    label.className = "engine-item";
+    
+    const vpnSites = ['google','pinterest'];
+    const className = vpnSites.includes(k) ? 'vpn-warning' : '';
+    
+    label.innerHTML = `<input type="radio" name="engine" value="${k}"> <span class="${className}">${engines[k]}</span>`;
+    let input = label.querySelector("input");
+    input.checked = k === current;
+    
+    input.onchange = () => {
+      saveChecked(k);
     };
-    list.appendChild(l);
+    list.appendChild(label);
   })
 }
 
-// 中英互译（自动识别）
+// 中英互译
 async function translateKeyword(){
   let v=document.getElementById("keyword").value.trim();
   if(!v){alert("请输入内容");return}
@@ -498,7 +499,7 @@ async function translateKeyword(){
   b.innerText="翻译中…";b.disabled=1;
   
   try {
-    const isChinese = /[\u4e00-\u9fa5]/.test(v);
+    const isChinese = /[\u4e00-\u9fa5]/i.test(v);
     const langPair = isChinese ? "zh|en" : "en|zh";
     
     let res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(v)}&langpair=${langPair}`);
@@ -547,38 +548,34 @@ function buildUrl(k){
   return w?engineUrl[k].replace("（关键词）",encodeURIComponent(w)):"";
 }
 
-// 搜索：勾选哪些站就一次性打开（最多6个）
+// 单选搜索
 function search(){
   let w=document.getElementById("keyword").value.trim();
   if(!w){alert("请输入关键词");return}
-  let c=getChecked();
-  if(c.length===0){alert("请勾选网站");return}
-  const maxOpen = 6;
-  let list = c.slice(0,maxOpen);
+  
+  let selected = getChecked();
+  if(!selected){alert("请选择网站");return}
+  
   saveHistory(w);
-  list.forEach((e,i)=>{
-    setTimeout(()=>{
-      let u=buildUrl(e);
-      if(u) window.open(u,'_blank');
-    },i*300);
-  })
-  if(c.length>maxOpen) alert(`已限制最多同时打开${maxOpen}个站点，避免浏览器拦截`);
+  let u = buildUrl(selected);
+  if(u) window.open(u, '_blank');
 }
 
 function copyLink(){
-  let c=getChecked();
-  if(c.length===0){alert("请勾选网站");return}
-  let first=buildUrl(c[0]);
-  if(first){
-    document.getElementById("result").value=first;
-    navigator.clipboard.writeText(first).then(()=>alert("已复制首个链接")).catch(()=>alert("复制失败"));
+  let selected = getChecked();
+  if(!selected){alert("请选择网站");return}
+  
+  let url = buildUrl(selected);
+  if(url){
+    document.getElementById("result").value = url;
+    navigator.clipboard.writeText(url).then(()=>alert("已复制链接")).catch(()=>alert("复制失败"));
   }
 }
 
 window.onload=()=>{
   initTheme();
   renderHistory();
-  renderCheck();
+  renderEngines();
   const kw = document.getElementById("keyword");
   kw.addEventListener("keydown",e=>{
     if(e.key==="Enter"){
