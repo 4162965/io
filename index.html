@@ -417,6 +417,9 @@ const engines = {
   zcool: "站酷",
   xiaohongshu: "小红书",
   yaru: "以图搜图",
+  tuchong: "图虫创意",
+  visualchina: "视觉中国",
+  soutushenqi: "搜图神器",
   google: "Google图片",
   pinterest: "Pinterest"
 };
@@ -432,6 +435,9 @@ const engineUrl = {
   zcool: "https://www.zcool.com.cn/search/content?word=（关键词）",
   xiaohongshu: "https://www.xiaohongshu.com/search_result?keyword=（关键词）",
   yaru: "https://ya.ru/images?family=yes&text=（关键词）",
+  tuchong: "https://stock.tuchong.com/search?source=tc_pc_home_search&term=（关键词）",
+  visualchina: "https://www.vcg.com/creative-image/（关键词）/",
+  soutushenqi: "https://www.soutushenqi.com/image/search?searchWord=（关键词）",
   google: "https://www.google.com/search?tbm=isch&q=（关键词）",
   pinterest: "https://www.pinterest.com/search/pins/?q=（关键词）"
 };
@@ -581,10 +587,14 @@ window.onload=()=>{
   renderHistory();
   renderEngines();
   const kw = document.getElementById("keyword");
-  kw.addEventListener("keydown",e=>{
+  kw.addEventListener("keydown",function(e){
     if(e.key==="Enter"){
       e.preventDefault();
-      search();
+      if(e.ctrlKey){
+        translateKeyword();
+      }else{
+        search();
+      }
     }
   });
   kw.focus();
