@@ -587,19 +587,17 @@ window.onload=()=>{
   renderHistory();
   renderEngines();
   const kw = document.getElementById("keyword");
-  kw.addEventListener("keydown",function(e){
-    if(e.key==="Enter"){
-      e.preventDefault();
-      if(e.ctrlKey){
-        translateKeyword();
-      }else{
-        search();
-      }
-    }
-  });
   kw.focus();
   setTimeout(hideLoading,300);
 }
+
+// 按回车键搜索（整个页面任意位置）
+document.addEventListener("keydown", function(e) {
+  if(e.key === "Enter" && e.target.tagName !== "BUTTON") {
+    e.preventDefault();
+    search();
+  }
+});
 </script>
 </body>
 </html>
